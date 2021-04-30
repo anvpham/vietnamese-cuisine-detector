@@ -1,12 +1,11 @@
-
-using FoodService.Data;
+using FoodService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace FoodService
 {
@@ -22,8 +21,9 @@ namespace FoodService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration["Redis"]));
+            services.AddSingleton<ICacheService, RedisService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
