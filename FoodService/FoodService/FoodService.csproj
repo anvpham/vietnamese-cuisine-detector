@@ -1,15 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
+      <UserSecretsId>76571a97-d50e-4a32-9ba5-812bd62cdf3e</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Controllers" />
+      <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
     </ItemGroup>
 
 </Project>
