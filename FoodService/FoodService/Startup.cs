@@ -1,3 +1,4 @@
+using System;
 using FoodService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,8 +22,18 @@ namespace FoodService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient("googlePlaces", c =>
+            {
+                c.BaseAddress = new Uri(Configuration["GooglePlacesEndpoint"]);
+            });
+            
+            services.AddHttpClient("foodPrediction", c =>
+            {
+                c.BaseAddress = new Uri(Configuration["FoodPredictionEndpoint"]);
+            });
+            
             services.AddControllers();
-            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration["Redis"]));
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration["RedisEndpoint"]));
             services.AddSingleton<ICacheService, RedisService>();
         }
 
