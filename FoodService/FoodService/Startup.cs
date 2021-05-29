@@ -31,7 +31,15 @@ namespace FoodService
             {
                 c.BaseAddress = new Uri(Configuration["FoodPredictionEndpoint"]);
             });
-            
+
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.SetIsOriginAllowed(_ => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }));
+
             services.AddControllers();
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration["RedisEndpoint"]));
             services.AddSingleton<ICacheService, RedisService>();
