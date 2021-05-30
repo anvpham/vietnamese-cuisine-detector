@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{CC9A59C2-C23B-4E87-A430-4B010B2FAD9A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC9A59C2-C23B-4E87-A430-4B010B2FAD9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC9A59C2-C23B-4E87-A430-4B010B2FAD9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC9A59C2-C23B-4E87-A430-4B010B2FAD9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC9A59C2-C23B-4E87-A430-4B010B2FAD9A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
