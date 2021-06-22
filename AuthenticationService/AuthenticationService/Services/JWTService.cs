@@ -19,7 +19,7 @@ namespace AuthenticationService.Services
         {
             _configuration = configuration;
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTPrivateKey"]));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwtSecretKey"]));
             _signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             _jwtTokenHandler = new JwtSecurityTokenHandler();
         }
@@ -28,7 +28,7 @@ namespace AuthenticationService.Services
         {
             var claims = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()), new Claim(ClaimTypes.Name, userName)
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()), new Claim(ClaimTypes.Name, userName), new Claim("Identity", "User")
             });
 
             var tokenDescriptor = new SecurityTokenDescriptor

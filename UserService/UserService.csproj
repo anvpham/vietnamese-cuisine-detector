@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>76571a97-d50e-4a32-9ba5-812bd62cdf3e</UserSecretsId>
+    <UserSecretsId>23adb156-7295-4f2f-bc52-d0aa4e19b3ca</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="2.2.4"/>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7"/>
   </ItemGroup>
 </Project>

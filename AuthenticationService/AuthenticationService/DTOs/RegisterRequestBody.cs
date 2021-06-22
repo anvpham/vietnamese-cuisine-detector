@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationService.DTOs
 {
-    public class RegisterDTO
+    public class RegisterRequestBody
     {
         [Required]
         public string UserName { get; set; }

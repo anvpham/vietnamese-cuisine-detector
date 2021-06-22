@@ -7,6 +7,7 @@ using FoodService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodService.Controllers
 {
@@ -30,7 +31,7 @@ namespace FoodService.Controllers
             _jsonSerializerOptions = new JsonSerializerOptions() {PropertyNameCaseInsensitive = true};
         }
 
-        [HttpPost("predict")]
+        [HttpPost("predict"), Authorize(Policy = "Users")]
         public async Task<IActionResult> Predict([FromForm] IFormFile image)
         {
             byte[] imageBytes = new byte[4000000];

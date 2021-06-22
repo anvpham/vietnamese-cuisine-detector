@@ -1,18 +1,16 @@
-using System.Text;
-using AuthenticationService.Data;
-using AuthenticationService.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using UserService.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System;
+using System.Text;
 
-namespace AuthenticationService
+namespace UserService
 {
     public class Startup
     {
@@ -26,18 +24,14 @@ namespace AuthenticationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration["dbConnectionString"]));
 
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration["DbConnectionString"]));
-            
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            {
-                builder.SetIsOriginAllowed(_ => true)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            }));
-            
+            services.AddAuthorization(options => {
+                options.AddPolicy("AuthenticationService", policyBuilder => {
+                    policyBuilder.RequireClaim("Identity", "AuthenticationService");
+                });
+            });
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
@@ -47,15 +41,12 @@ namespace AuthenticationService
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTPrivateKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwtSecretKey"])),
+
                 };
             });
 
-            services.AddHttpClient("userService", c => {
-                c.BaseAddress = new Uri(Configuration["userServiceEndpoint"]);
-            });
-
-            services.AddSingleton<JWTService>();
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,16 +61,18 @@ namespace AuthenticationService
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Authentication service API");
+                endpoints.MapGet("/", async context => {
+                    await context.Response.WriteAsync("User service");
                 });
+                
                 endpoints.MapControllers();
             });
         }
     }
-} 
+}

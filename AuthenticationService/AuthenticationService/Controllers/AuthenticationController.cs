@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -10,6 +11,8 @@ using AuthenticationService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace AuthenticationService.Controllers
 {
@@ -22,16 +25,19 @@ namespace AuthenticationService.Controllers
         private readonly AppDbContext _dbContext;
 
         private readonly JWTService _jwtService;
+
+        private readonly IHttpClientFactory _clientFactory;
         
-        public AuthenticationController(IConfiguration configuration, AppDbContext dbContext, JWTService jwtService)
+        public AuthenticationController(IConfiguration configuration, AppDbContext dbContext, JWTService jwtService, IHttpClientFactory clientFactory)
         {
             _configuration = configuration;
             _dbContext = dbContext;
             _jwtService = jwtService;
+            _clientFactory = clientFactory;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO registerData)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestBody registerData)
         {
             if (registerData.Password.Length < 8)
             {
@@ -43,10 +49,10 @@ namespace AuthenticationService.Controllers
                 return StatusCode(409, new { result = "UserName can not contain white space or upper characters" });
             }
 
-            bool doesUserNameExist =
+            bool userNameExist =
                 await _dbContext.UserCredentials.FirstOrDefaultAsync(uc => uc.UserName == registerData.UserName) != null;
 
-            if (doesUserNameExist)
+            if (userNameExist)
             {
                 return StatusCode(409, new { result = "The username is already being used, please try another one" });
             }
@@ -63,7 +69,23 @@ namespace AuthenticationService.Controllers
             await _dbContext.UserCredentials.AddAsync(userCredential);
             await _dbContext.SaveChangesAsync();
 
-            var jwtToken = _jwtService.GenerateToken(userCredential.UserId, userCredential.UserName);
+            HttpClient userServiceClient = _clientFactory.CreateClient("userService");
+
+            string jsonString = JsonSerializer.Serialize(new CreateUserRequestBody {
+                UserId = userCredential.UserId,
+                UserName = userCredential.UserName
+            });
+
+            HttpContent httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/createuser");
+
+            request.Content = httpContent;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _configuration["AuthenticationServiceKey"]);
+
+            await userServiceClient.SendAsync(request);
+
+            string jwtToken = _jwtService.GenerateToken(userCredential.UserId, userCredential.UserName);
             
             return StatusCode(201, new { result = "Created successfully", jwtToken });
         }
